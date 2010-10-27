@@ -1,0 +1,8 @@
+## Interface: 40000
+## Title: idAddon
+## Author: Industrial
+## Notes: Does everything.
+
+lib\Lib.lua
+
+Addon.lua
