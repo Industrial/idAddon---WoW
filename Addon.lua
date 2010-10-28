@@ -39,7 +39,7 @@ local function cvars()
   SetCVar('cameraDistanceMax', 30)
 end
 
-local function maps()
+local function minimap()
   local function process(f1, p1, f2, p2, x, y, make_unmovable)
     make_unmovable = make_unmovable == false and false or true
 
@@ -97,7 +97,7 @@ local function enable()
   slashcommands()
   tooltips()
   cvars()
-  maps()
+  minimap()
 end
 
 event_frame = CreateFrame('Frame')
