@@ -71,7 +71,7 @@ local function maps()
     end
   end)
 
-  process(MinimapCluster, ML, TargetFrame, MR, 0, 0)
+  process(MinimapCluster, MR, PlayerFrame, ML, 0, 0)
   process(WatchFrameCollapseExpandButton, TL, UIParent, TL, 5, -20)
   process(WatchFrameHeader, ML, WatchFrameCollapseExpandButton, MR, 5, -2)
   process(WatchFrame, TL, WatchFrameCollapseExpandButton, BL, 25, 25)
