@@ -25,7 +25,6 @@ local function slashcommands()
   -- add slash commands for realoding the screen
   SlashCmdList['IDADDON_RELOAD'] = ReloadUI
   SLASH_IDADDON_RELOAD1 = '/rl'
-  SLASH_IDADDON_RELOAD2 = '/reload'
 end
 
 local function tooltips()
