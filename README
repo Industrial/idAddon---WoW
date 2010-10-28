@@ -1,0 +1,22 @@
+This addon is a collection for settings and bits of code from other addons that
+I've made over the years that are now rolled into here.
+
+Features
+  Unitframes
+    - Moves the unitframes to the center of the screen, under the character.
+    - Moves the castingbar on top of the player and target unitframes.
+
+  Slashcommands
+    - Adds slashcommand /rl for reloading the interface.
+
+  Tooltips
+    - Anchors the tooltip to the mouse.
+
+  CVars (blizzard settings)
+    - Sets the max camera distance to the max value (30)
+
+  Minimap
+    - Removes all buttons around the minimap, leaving a clean round frame.
+    - Zoom in and out with the mousewheel.
+    - Track trings with the right mouse button.
+
