@@ -1,3 +1,9 @@
+local TL, TC, TR = 'TOPLEFT',    'TOP',    'TOPRIGHT'
+local ML, MC, MR = 'LEFT',       'CENTER', 'RIGHT'
+local BL, BC, BR = 'BOTTOMLEFT', 'BOTTOM', 'BOTTOMRIGHT'
+
+local nothing = function(...) end
+
 local function unitframes()
   -- move the unitframes to the center of the screen, under the 3d character.
   PlayerFrame:ClearAllPoints()
