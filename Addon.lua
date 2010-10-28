@@ -45,7 +45,7 @@ local function maps()
   -- TODO: take out the endurance figure
   local f = MinimapCluster
   f:ClearAllPoints()
-  f:SetPoint(BC, UIParent, BC, 340, 10)
+  f:SetPoint(MR, PlayerFrame, ML, 0, 0)
 
   f = WatchFrameCollapseExpandButton
   f:ClearAllPoints()
