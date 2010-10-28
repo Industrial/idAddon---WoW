@@ -61,11 +61,18 @@ local function maps()
     end
   end
 
-  local minimap_zoom_frame = CreateFrame('Button', 'idAddon_minimap_zoom_frame', Minimap)
-  minimap_zoom_frame:SetAllPoints(Minimap)
-  minimap_zoom_frame:EnableMouseWheel(true)
-  minimap_zoom_frame:SetScript('OnMouseWheel', zoomMinimap)
-  process(MinimapCluster, MR, PlayerFrame, ML, 0, 0)
+  Minimap:EnableMouseWheel(true)
+  Minimap:SetScript('OnMouseWheel', zoomMinimap)
+  Minimap:SetScript('OnMouseUp', function(frame, button, ...)
+    print(button)
+    if button == 'RightButton' then
+      MiniMapTrackingButton:GetScript('OnClick')()
+    else
+      Minimap_OnClick(Minimap)
+    end
+  end)
+
+  process(MinimapCluster, ML, TargetFrame, MR, 0, 0)
   process(WatchFrameCollapseExpandButton, TL, UIParent, TL, 5, -20)
   process(WatchFrameHeader, ML, WatchFrameCollapseExpandButton, MR, 5, -2)
   process(WatchFrame, TL, WatchFrameCollapseExpandButton, BL, 25, 25)
@@ -75,6 +82,7 @@ local function maps()
   -- hide minimap elements
   GameTimeFrame:Hide() -- calendar
   TimeManagerClockButton:Hide()
+  MiniMapTracking:Hide()
   MinimapBorderTop:Hide()
   MiniMapWorldMapButton:Hide()
   MiniMapVoiceChatFrame:Hide()
