@@ -7,8 +7,10 @@ local nothing = function(...) end
 local function unitframes()
   -- move the unitframes to the center of the screen, under the 3d character.
   PlayerFrame:ClearAllPoints()
+  PlayerFrame:SetPoint(MR, UIParent, MC, 3.5, -250)
   PlayerFrame:SetPoint(MR, UIParent, MC, 3.5 - 20, -250)
   TargetFrame:ClearAllPoints()
+  TargetFrame:SetPoint(ML, UIParent, MC, -3.5, -250)
   TargetFrame:SetPoint(ML, UIParent, MC, -3.5 + 20, -250)
   PartyMemberFrame1:ClearAllPoints()
   PartyMemberFrame1:SetPoint(ML, TargetFrame, MR, 0, 100)
