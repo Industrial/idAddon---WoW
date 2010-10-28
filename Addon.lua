@@ -41,31 +41,24 @@ local function cvars()
 end
 
 local function maps()
-  -- minimap next to actionbar
-  -- TODO: take out the endurance figure
-  local f = MinimapCluster
-  f:ClearAllPoints()
-  f:SetPoint(MR, PlayerFrame, ML, 0, 0)
+  local function process(f1, p1, f2, p2, x, y, make_unmovable)
+    make_unmovable = make_unmovable == false and false or true
 
-  f = WatchFrameCollapseExpandButton
-  f:ClearAllPoints()
-  f:SetPoint(TL, UIParent, TL, 5, -20)
-  f = WatchFrameHeader
-  f:ClearAllPoints()
-  f:SetPoint(ML, WatchFrameCollapseExpandButton, MR, 5, -2)
-  f = WatchFrame
-  f:ClearAllPoints()
-  f:SetPoint(TL, WatchFrameCollapseExpandButton, BL, 25, 25)
-  f.ClearAllPoints = nothing
-  f.SetPoint = nothing
-  f = MiniMapLFGFrame
-  f:ClearAllPoints()
-  f:SetPoint(MC, MinimapCluster, TC, 10, -20)
-  f = DurabilityFrame
-  f:ClearAllPoints()
-  f:SetPoint(TR, UIParent, TR, 0, -25)
-  f.ClearAllPoints = nothing
-  f.SetPoint = nothing
+    f1:ClearAllPoints()
+    f1:SetPoint(p1, f2, p2, x, y)
+
+    if make_unmovable then
+      f1.ClearAllPoints = nothing
+      f1.SetPoint = nothing
+    end
+  end
+
+  process(MinimapCluster, MR, PlayerFrame, ML, 0, 0)
+  process(WatchFrameCollapseExpandButton, TL, UIParent, TL, 5, -20)
+  process(WatchFrameHeader, ML, WatchFrameCollapseExpandButton, MR, 5, -2)
+  process(WatchFrame, TL, WatchFrameCollapseExpandButton, BL, 25, 25)
+  process(MiniMapLFGFrame, MC, MinimapCluster, TC, 10, -20)
+  process(DurabilityFrame, TR, UIParent, TR, 0, -25)
 end
 
 local function enable()
