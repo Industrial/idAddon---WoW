@@ -53,12 +53,36 @@ local function maps()
     end
   end
 
+  local function zoomMinimap(frame, delta)
+    if delta > 0 and Minimap:GetZoom() < 5 then
+      Minimap:SetZoom(Minimap:GetZoom() + 1)
+    elseif delta < 0 and Minimap:GetZoom() > 0 then
+      Minimap:SetZoom(Minimap:GetZoom() - 1)
+    end
+  end
+
+  local minimap_zoom_frame = CreateFrame('Button', 'idAddon_minimap_zoom_frame', Minimap)
+  minimap_zoom_frame:SetAllPoints(Minimap)
+  minimap_zoom_frame:EnableMouseWheel(true)
+  minimap_zoom_frame:SetScript('OnMouseWheel', zoomMinimap)
   process(MinimapCluster, MR, PlayerFrame, ML, 0, 0)
   process(WatchFrameCollapseExpandButton, TL, UIParent, TL, 5, -20)
   process(WatchFrameHeader, ML, WatchFrameCollapseExpandButton, MR, 5, -2)
   process(WatchFrame, TL, WatchFrameCollapseExpandButton, BL, 25, 25)
   process(MiniMapLFGFrame, MC, MinimapCluster, TC, 10, -20)
   process(DurabilityFrame, TR, UIParent, TR, 0, -25)
+
+  -- hide minimap elements
+  GameTimeFrame:Hide() -- calendar
+  TimeManagerClockButton:Hide()
+  MinimapBorderTop:Hide()
+  MiniMapWorldMapButton:Hide()
+  MiniMapVoiceChatFrame:Hide()
+  MiniMapVoiceChatFrame:SetScript('OnShow', MiniMapVoiceChatFrame.Hide)
+  MiniMapWorldMapButton:Hide()
+  MinimapZoneTextButton:Hide()
+  MinimapZoomIn:Hide()
+  MinimapZoomOut:Hide()
 end
 
 local function enable()
