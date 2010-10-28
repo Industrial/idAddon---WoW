@@ -1,7 +1,7 @@
 ## Interface: 40000
 ## Title: idAddon
 ## Author: Industrial
-## Notes: Does everything.
+## Notes: Everything I can't play without anymore.
 
 lib\Lib.lua
 
