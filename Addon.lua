@@ -1,45 +1,72 @@
+local LibStub = _G.LibStub
+local AceAddon = LibStub('AceAddon-3.0')
+local AceDB = LibStub('AceDB-3.0')
+local AceDBOptions = LibStub('AceDBOptions-3.0')
+local AceConfig = LibStub('AceConfig-3.0')
+local AceConfigDialog = LibStub('AceConfigDialog-3.0')
+
 local TL, TC, TR = 'TOPLEFT',    'TOP',    'TOPRIGHT'
 local ML, MC, MR = 'LEFT',       'CENTER', 'RIGHT'
 local BL, BC, BR = 'BOTTOMLEFT', 'BOTTOM', 'BOTTOMRIGHT'
 
+local ADDON_NAME = 'idAddon'
+
 local nothing = function(...) end
 
-local function unitframes()
-  -- move the unitframes to the center of the screen, under the 3d character.
-  PlayerFrame:ClearAllPoints()
-  PlayerFrame:SetPoint(MR, UIParent, MC, 3.5, -250)
-  TargetFrame:ClearAllPoints()
-  TargetFrame:SetPoint(ML, UIParent, MC, -3.5, -250)
+local Addon = AceAddon:NewAddon(ADDON_NAME)
+
+local defaults = {
+  profile = {
+    unitframes = {
+      x = 0,
+      y = 300
+    }
+  }
+}
+
+function Addon:enableUnitframes()
+  local db = self.db.profile.unitframes
+
+  self:updateUnitframes()
+
   PartyMemberFrame1:ClearAllPoints()
   PartyMemberFrame1:SetPoint(ML, TargetFrame, MR, 0, 100)
   FocusFrame:ClearAllPoints()
   FocusFrame:SetPoint(TC, TargetFrame, BC)
 
   -- move the castingbar on top of the player and target unitframes
-  UIPARENT_MANAGED_FRAME_POSITIONS['CastingBarFrame'] = nil
+  --[[UIPARENT_MANAGED_FRAME_POSITIONS['CastingBarFrame'] = nil
   CastingBarFrame:ClearAllPoints()
-  CastingBarFrame:SetPoint(BC, UIParent, MC, 0, -210)
+  CastingBarFrame:SetPoint(MC, UIParent, MC, 0, -db.y + 20)]]
 end
 
-local function slashcommands()
+function Addon:updateUnitframes()
+  local db = self.db.profile.unitframes
+  PlayerFrame:ClearAllPoints()
+  PlayerFrame:SetPoint(MR, UIParent, MC, -db.x + 3.5, -db.y)
+  TargetFrame:ClearAllPoints()
+  TargetFrame:SetPoint(ML, UIParent, MC, db.x - 3.5, -db.y)
+end
+
+function Addon:enableSlashcommands()
   -- add slash commands for realoding the screen
   SlashCmdList['IDADDON_RELOAD'] = ReloadUI
   SLASH_IDADDON_RELOAD1 = '/rl'
 end
 
-local function tooltips()
+function Addon:enableTooltips()
   -- put the tooltip on the mouse
   hooksecurefunc('GameTooltip_SetDefaultAnchor', function(tooltip, self)
     tooltip:SetOwner(self, 'ANCHOR_CURSOR')
   end)
 end
 
-local function cvars()
+function Addon:enableCvars()
   -- max out the max cam distance
   SetCVar('cameraDistanceMax', 30)
 end
 
-local function minimap()
+function Addon:enableMinimap()
   local function process(f1, p1, f2, p2, x, y, make_unmovable)
     make_unmovable = make_unmovable == false and false or true
 
@@ -92,19 +119,65 @@ local function minimap()
   MinimapZoomOut:Hide()
 end
 
-local function enable()
-  unitframes()
-  slashcommands()
-  tooltips()
-  cvars()
-  minimap()
+function Addon:OnInitialize()
+  self.db = AceDB:New('idAddonDB', defaults, true)
+
+  local options = {
+    type = 'group',
+    args = {
+      profiles = AceDBOptions:GetOptionsTable(self.db),
+      unitframes = {
+        type = 'group',
+        name = 'Unitframes',
+        args = {
+          x = {
+            name = 'x',
+            desc = 'horizontal position from the center of the screen',
+            type = 'range',
+            min = 0,
+            max = 500,
+            get = function(f)
+              return self.db.profile.unitframes.x
+            end,
+            set = function(f, v)
+              self.db.profile.unitframes.x = v
+              self:updateUnitframes()
+            end,
+          },
+          y = {
+            name = 'y',
+            desc = 'vertical position from the center of the screen',
+            type = 'range',
+            min = -500,
+            max = 500,
+            get = function(f)
+              return self.db.profile.unitframes.y
+            end,
+            set = function(f, v, ...)
+              print(f, v, ...)
+              self.db.profile.unitframes.y = v
+              self:updateUnitframes()
+            end,
+          },
+        }
+      },
+    }
+  }
+
+  AceConfig:RegisterOptionsTable(ADDON_NAME, options, {'idaddon', 'id'})
+  AceConfigDialog:AddToBlizOptions(ADDON_NAME)
 end
 
-event_frame = CreateFrame('Frame')
-event_frame:SetScript('OnEvent', function(frame, event, ...)
-  if event == 'PLAYER_LOGIN' then
-    enable()
-  end
-end)
-event_frame:RegisterEvent('PLAYER_LOGIN')
+function Addon:OnEnable()
+  self:enableUnitframes()
+  self:enableSlashcommands()
+  self:enableTooltips()
+  self:enableCvars()
+  self:enableMinimap()
+end
+
+function Addon:OnDisable()
+end
+
+_G[ADDON_NAME] = Addon
 
