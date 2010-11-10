@@ -90,7 +90,6 @@ function Addon:enableMinimap()
   Minimap:EnableMouseWheel(true)
   Minimap:SetScript('OnMouseWheel', zoomMinimap)
   Minimap:SetScript('OnMouseUp', function(frame, button, ...)
-    print(button)
     if button == 'RightButton' then
       MiniMapTrackingButton:GetScript('OnClick')()
     else
