@@ -1,4 +1,5 @@
 local LibStub = _G.LibStub
+local Industrial = LibStub('Industrial-1.0')
 local AceAddon = LibStub('AceAddon-3.0')
 local AceDB = LibStub('AceDB-3.0')
 local AceDBOptions = LibStub('AceDBOptions-3.0')
@@ -10,24 +11,110 @@ local ML, MC, MR = 'LEFT',       'CENTER', 'RIGHT'
 local BL, BC, BR = 'BOTTOMLEFT', 'BOTTOM', 'BOTTOMRIGHT'
 
 local ADDON_NAME = 'idAddon'
-
-local nothing = function(...) end
+local OPTIONS
+local DB
 
 local Addon = AceAddon:NewAddon(ADDON_NAME)
 
-local defaults = {
-  profile = {
-    unitframes = {
-      x = 0,
-      y = 300
+function Addon:OnInitialize()
+  DB = AceDB:New('idAddonDB', {
+    profile = {
+      modules = {
+        unitframes = {
+          x = 0,
+          y = 300
+        }
+      }
+    }
+  }, true)
+
+  OPTIONS = {
+    type = 'group',
+    args = {
+      profiles = AceDBOptions:GetOptionsTable(DB),
+      modules = {
+        type = 'group',
+        name = 'Modules',
+        args = {}
+      }
     }
   }
-}
 
-function Addon:enableUnitframes()
-  local db = self.db.profile.unitframes
+  AceConfig:RegisterOptionsTable(ADDON_NAME, OPTIONS, {'idaddon', 'id'})
+  AceConfigDialog:AddToBlizOptions(ADDON_NAME)
+end
 
-  self:updateUnitframes()
+function Addon:OnDisable()
+end
+
+local SlashcommandsModule = Addon:NewModule('Slashcommands')
+function SlashcommandsModule:Enable()
+  -- add slash commands for realoding the screen
+  SlashCmdList['IDADDON_RELOAD'] = ReloadUI
+  SLASH_IDADDON_RELOAD1 = '/rl'
+end
+
+function SlashcommandsModule:Disable()
+  SlashCmdList['IDADDON_RELOAD'] = nil
+  SLASH_IDADDON_RELOAD1 = nil
+end
+
+local TooltipsModule = Addon:NewModule('Tooltips', 'AceHook-3.0')
+function TooltipsModule:OnEnable()
+  -- put the tooltip on the mouse
+  self:Hook('GameTooltip_SetDefaultAnchor', function(tooltip, self)
+    tooltip:SetOwner(self, 'ANCHOR_CURSOR')
+  end, true)
+end
+
+function TooltipsModule:OnDisable()
+  self:Unhook('GameTooltip_SetDefaultAnchor')
+end
+
+local CVarsModule = Addon:NewModule('CVars')
+function CVarsModule:OnEnable()
+  SetCVar('cameraDistanceMax', 30)
+end
+
+local UnitframesModule = Addon:NewModule('Unitframes')
+function UnitframesModule:OnEnable()
+  OPTIONS.args.modules.args.unitframes = {
+    type = 'group',
+    name = 'Unitframes',
+    args = {
+      x = {
+        name = 'x',
+        desc = 'horizontal position from the center of the screen',
+        type = 'range',
+        min = 0,
+        max = 500,
+        get = function(f)
+          return DB.profile.modules.unitframes.x
+        end,
+        set = function(f, v)
+          DB.profile.modules.unitframes.x = v
+          self:Update()
+        end,
+      },
+      y = {
+        name = 'y',
+        desc = 'vertical position from the center of the screen',
+        type = 'range',
+        min = -500,
+        max = 500,
+        get = function(f)
+          return DB.profile.modules.unitframes.y
+        end,
+        set = function(f, v)
+          DB.profile.modules.unitframes.y = v
+          self:Update()
+        end,
+      },
+    }
+  }
+  local db = DB.profile.modules.unitframes
+
+  self:Update()
 
   PartyMemberFrame1:ClearAllPoints()
   PartyMemberFrame1:SetPoint(ML, TargetFrame, MR, 0, 100)
@@ -40,45 +127,19 @@ function Addon:enableUnitframes()
   CastingBarFrame:SetPoint(MC, UIParent, MC, 0, -db.y + 20)]]
 end
 
-function Addon:updateUnitframes()
-  local db = self.db.profile.unitframes
+function UnitframesModule:OnDisable()
+end
+
+function UnitframesModule:Update()
+  local db = DB.profile.modules.unitframes
   PlayerFrame:ClearAllPoints()
   PlayerFrame:SetPoint(MR, UIParent, MC, -db.x + 3.5, -db.y)
   TargetFrame:ClearAllPoints()
   TargetFrame:SetPoint(ML, UIParent, MC, db.x - 3.5, -db.y)
 end
 
-function Addon:enableSlashcommands()
-  -- add slash commands for realoding the screen
-  SlashCmdList['IDADDON_RELOAD'] = ReloadUI
-  SLASH_IDADDON_RELOAD1 = '/rl'
-end
-
-function Addon:enableTooltips()
-  -- put the tooltip on the mouse
-  hooksecurefunc('GameTooltip_SetDefaultAnchor', function(tooltip, self)
-    tooltip:SetOwner(self, 'ANCHOR_CURSOR')
-  end)
-end
-
-function Addon:enableCvars()
-  -- max out the max cam distance
-  SetCVar('cameraDistanceMax', 30)
-end
-
-function Addon:enableMinimap()
-  local function process(f1, p1, f2, p2, x, y, make_unmovable)
-    make_unmovable = make_unmovable == false and false or true
-
-    f1:ClearAllPoints()
-    f1:SetPoint(p1, f2, p2, x, y)
-
-    if make_unmovable then
-      f1.ClearAllPoints = nothing
-      f1.SetPoint = nothing
-    end
-  end
-
+local MinimapModule = Addon:NewModule('Minimap')
+function MinimapModule:OnEnable()
   local function zoomMinimap(frame, delta)
     if delta > 0 and Minimap:GetZoom() < 5 then
       Minimap:SetZoom(Minimap:GetZoom() + 1)
@@ -97,12 +158,12 @@ function Addon:enableMinimap()
     end
   end)
 
-  process(MinimapCluster, MR, PlayerFrame, ML, 0, 0)
-  process(WatchFrameCollapseExpandButton, TL, UIParent, TL, 5, -20)
-  process(WatchFrameHeader, ML, WatchFrameCollapseExpandButton, MR, 5, -2)
-  process(WatchFrame, TL, WatchFrameCollapseExpandButton, BL, 25, 25)
-  process(MiniMapLFGFrame, MC, MinimapCluster, TC, 10, -20)
-  process(DurabilityFrame, TR, UIParent, TR, 0, -25)
+  Industrial.Frames:Move(MinimapCluster, MR, PlayerFrame, ML, 0, 0)
+  Industrial.Frames:Move(WatchFrameCollapseExpandButton, TL, UIParent, TL, 1, -1)
+  Industrial.Frames:Move(WatchFrameHeader, ML, WatchFrameCollapseExpandButton, MR, 5, -2)
+  Industrial.Frames:Move(WatchFrame, TL, WatchFrameCollapseExpandButton, BL, 30, 25, {lock_in_place=true})
+  Industrial.Frames:Move(MiniMapLFGFrame, MC, MinimapCluster, TC, 10, -20)
+  Industrial.Frames:Move(DurabilityFrame, TR, UIParent, TR, 0, -25)
 
   -- hide minimap elements
   GameTimeFrame:Hide() -- calendar
@@ -118,65 +179,18 @@ function Addon:enableMinimap()
   MinimapZoomOut:Hide()
 end
 
-function Addon:OnInitialize()
-  self.db = AceDB:New('idAddonDB', defaults, true)
-
-  local options = {
-    type = 'group',
-    args = {
-      profiles = AceDBOptions:GetOptionsTable(self.db),
-      unitframes = {
-        type = 'group',
-        name = 'Unitframes',
-        args = {
-          x = {
-            name = 'x',
-            desc = 'horizontal position from the center of the screen',
-            type = 'range',
-            min = 0,
-            max = 500,
-            get = function(f)
-              return self.db.profile.unitframes.x
-            end,
-            set = function(f, v)
-              self.db.profile.unitframes.x = v
-              self:updateUnitframes()
-            end,
-          },
-          y = {
-            name = 'y',
-            desc = 'vertical position from the center of the screen',
-            type = 'range',
-            min = -500,
-            max = 500,
-            get = function(f)
-              return self.db.profile.unitframes.y
-            end,
-            set = function(f, v, ...)
-              print(f, v, ...)
-              self.db.profile.unitframes.y = v
-              self:updateUnitframes()
-            end,
-          },
-        }
-      },
-    }
-  }
-
-  AceConfig:RegisterOptionsTable(ADDON_NAME, options, {'idaddon', 'id'})
-  AceConfigDialog:AddToBlizOptions(ADDON_NAME)
+function MinimapModule:OnDisable()
 end
 
-function Addon:OnEnable()
-  self:enableUnitframes()
-  self:enableSlashcommands()
-  self:enableTooltips()
-  self:enableCvars()
-  self:enableMinimap()
+local BuffRelocationModule = Addon:NewModule('BuffRelocations')
+function BuffRelocationModule:OnEnable()
+  Industrial.Frames:Move(BuffFrame, TR, UIParent, TR, -1, -2, {lock_in_place=true})
+  Industrial.Frames:Move(ConsolidatedBuffs, TR, UIParent, TR, -1, -12, {lock_in_place=true})
 end
 
-function Addon:OnDisable()
+function BuffRelocationModule:OnDisable()
 end
+
 
 _G[ADDON_NAME] = Addon
 
