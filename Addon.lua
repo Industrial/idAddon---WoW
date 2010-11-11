@@ -191,6 +191,145 @@ end
 function BuffRelocationModule:OnDisable()
 end
 
+local FrameMoverModule = Addon:NewModule('FrameMover', 'AceEvent-3.0')
+local POINT_SETTINGS = {
+  ['TOPLEFT'] = 'TOPLEFT',
+  ['TOP'] = 'TOP',
+  ['TOPRIGHT'] = 'TOPRIGHT',
+  ['LEFT'] = 'LEFT',
+  ['CENTER'] = 'CENTER',
+  ['BOTTOMLEFT'] = 'BOTTOMLEFT',
+  ['BOTTOM'] = 'BOTTOM',
+  ['BOTTOMRIGHT'] = 'BOTTOMRIGHT',
+}
+
+function FrameMoverModule:AddFrame(frame)
+  local name = frame:GetName()
+  local p1, f2, p2, x, y = frame:GetPoint()
+
+  if self.db.frames[name] then
+    return
+  end
+
+  self.db.frames[name] = {
+    p1 = p1,
+    f2 = f2,
+    p2 = p2,
+    x = x,
+    y = y,
+  }
+  self.options.args.frames.args[name] = {
+    type = 'group',
+    name = name,
+    args = {
+      p1 = {
+        type = 'select',
+        style = 'radio',
+        name = 'p1',
+        desc = 'point for this frame',
+        values = POINT_SETTINGS,
+        get = function(f)
+          return self.db.frames[name].p1
+        end,
+        set = function(f, v)
+          self.db.frames[name].p1 = v
+        end,
+      },
+      f2 = {
+        type = 'input',
+        name = 'f2',
+        desc = 'name of other frame',
+        get = function(f)
+          return self.db.frames[name].f2
+        end,
+        set = function(f, v)
+          self.db.frames[name].f2 = v
+        end,
+      },
+      p2 = {
+        type = 'select',
+        style = 'radio',
+        name = 'p2',
+        desc = 'point for other frame',
+        values = POINT_SETTINGS,
+        get = function(f)
+          return self.db.frames[name].p2
+        end,
+        set = function(f, v)
+          self.db.frames[name].p2 = v
+        end,
+      },
+      x = {
+        type = 'range',
+        name = 'x',
+        desc = 'horizontal offset',
+        min = -500,
+        max = 500,
+        get = function(f)
+          return self.db.frames[name].x
+        end,
+        set = function(f, v)
+          self.db.frames[name].x = v
+        end,
+      },
+      y = {
+        type = 'range',
+        name = 'y',
+        desc = 'vertical offset',
+        min = -500,
+        max = 500,
+        get = function(f)
+          return self.db.frames[name].x
+        end,
+        set = function(f, v)
+          self.db.frames[name].x = v
+        end,
+      },
+    }
+  }
+end
+
+function FrameMoverModule:RemoveFrame(frame)
+  local name = frame:GetName()
+  self.db.frames[name] = nil
+  self.options.args.frames.args[name] = nil
+end
+
+function FrameMoverModule:OnEnable()
+  self.db = DB.profile.modules.framemover
+  self.options = {
+    type = 'group',
+    name = 'Frame Mover',
+    args = {
+      addremove_frames = {
+        type = 'group',
+        name = 'Add & Remove',
+        args = {
+          add = {
+            type = 'input',
+            name = 'add',
+            desc = 'Add frames',
+            validate = function(f, name)
+              local frame = _G[name]
+              if not frame then
+                return ('Frame \'%s\' does not exist.'):format(name)
+              end
+            end
+          }
+        }
+      },
+      frames = {
+        type = 'group',
+        name = 'Frames',
+        args = {
+        }
+      }
+    }
+  }
+  OPTIONS.args.modules.args.framemover = self.options
+
+  local db = DB.profile.modules.unitframes
+end
 
 _G[ADDON_NAME] = Addon
 
