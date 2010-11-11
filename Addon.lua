@@ -5,6 +5,7 @@ local AceDB = LibStub('AceDB-3.0')
 local AceDBOptions = LibStub('AceDBOptions-3.0')
 local AceConfig = LibStub('AceConfig-3.0')
 local AceConfigDialog = LibStub('AceConfigDialog-3.0')
+local AceConfigRegistry = LibStub('AceConfigRegistry-3.0')
 
 local TL, TC, TR = 'TOPLEFT',    'TOP',    'TOPRIGHT'
 local ML, MC, MR = 'LEFT',       'CENTER', 'RIGHT'
@@ -41,7 +42,8 @@ function Addon:OnInitialize()
   }
 
   AceConfig:RegisterOptionsTable(ADDON_NAME, OPTIONS, {'idaddon', 'id'})
-  AceConfigDialog:AddToBlizOptions(ADDON_NAME)
+  AceConfigRegistry:RegisterOptionsTable(ADDON_NAME..'BlizzardOptions', OPTIONS)
+  AceConfigDialog:AddToBlizOptions(ADDON_NAME..'BlizzardOptions', ADDON_NAME)
 end
 
 function Addon:OnDisable()
