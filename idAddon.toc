@@ -4,7 +4,18 @@
 ## Notes: Everything I can't play without anymore.
 ## SavedVariables: idAddonDB
 
-embeds.xml
+lib\LibStub\LibStub.lua
+lib\Industrial.lua
+lib\CallbackHandler-1.0\CallbackHandler-1.0.xml
+lib\AceAddon-3.0\AceAddon-3.0.xml
+lib\AceGUI-3.0\AceGUI-3.0.xml
+lib\AceConfig-3.0\AceConfig-3.0.xml
+lib\AceConsole-3.0\AceConsole-3.0.xml
+lib\AceDB-3.0\AceDB-3.0.xml
+lib\AceDBOptions-3.0\AceDBOptions-3.0.xml
+lib\AceEvent-3.0\AceEvent-3.0.xml
+lib\AceHook-3.0\AceHook-3.0.xml
+lib\AceTimer-3.0\AceTimer-3.0.xml
 
 Addon.lua
 
