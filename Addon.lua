@@ -310,10 +310,11 @@ function FrameMoverModule:OnEnable()
             name = 'add',
             desc = 'Add frames',
             validate = function(f, name)
-              local frame = _G[name]
+              return 'BEEH'
+              --[[local frame = _G[name]
               if not frame then
                 return ('Frame \'%s\' does not exist.'):format(name)
-              end
+              end]]
             end
           }
         }
