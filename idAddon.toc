@@ -4,7 +4,7 @@
 ## Notes: Everything I can't play without anymore.
 ## SavedVariables: idAddonDB
 
-lib\libs.xml
+embeds.xml
 
 Addon.lua
 

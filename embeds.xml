@@ -1,0 +1,14 @@
+<Ui xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+  <Script file="lib\LibStub\LibStub.lua"/>
+  <Include file="lib\CallbackHandler-l.0\CallbackHandler-l.0.xml"/>
+  <Include file="lib\AceAddon-3.0\AceAddon-3.0.xml"/>
+  <Include file="lib\AceConfig-3.0\AceConfig-3.0.xml"/>
+  <Include file="lib\AceConsole-3.0\AceConsole-3.0.xml"/>
+  <Include file="lib\AceDB-3.0\AceDB-3.0.xml"/>
+  <Include file="lib\AceDBOptions-3.0\AceDBOptions-3.0.xml"/>
+  <Include file="lib\AceEvent-3.0\AceEvent-3.0.xml"/>
+  <Include file="lib\AceGUI-3.0\AceGUI-3.0.xml"/>
+  <Include file="lib\AceHook-3.0\AceHook-3.0.xml"/>
+  <Include file="lib\AceTimer-3.0\AceTimer-3.0.xml"/>
+  <Script file="lib\Industrial.lua"/>
+</Ui>
